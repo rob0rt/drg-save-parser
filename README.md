@@ -1,6 +1,6 @@
 # DRG Save Parser
 
-![npm](https://img.shields.io/npm/v/drg-save-parser?style=for-the-badge)
+[![npm](https://img.shields.io/npm/v/drg-save-parser)](https://www.npmjs.com/package/drg-save-parser)
 [![GitHub license](https://img.shields.io/github/license/BobertForever/drg-save-parser?color=darkred)](https://github.com/BobertForever/drg-save-parser/blob/main/LICENSE)
 
 DRG Save Parser is a rust-based save file parser for Deep Rock Galactic, published
