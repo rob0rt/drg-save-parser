@@ -2,9 +2,10 @@
 [package]
 authors = ["Robert Lynch <robertlynch2012@gmail.com>"]
 edition = "2018"
-name = "save-parser"
-version = "1.0.0"
-repository = https://github.com/BobertForever/drg-save-parser 
+name = "drg-save-parser"
+version = "1.0.1"
+license = "GPL-3.0"
+repository = "https://github.com/BobertForever/drg-save-parser"
 
 [lib]
 crate-type = ["cdylib"]
