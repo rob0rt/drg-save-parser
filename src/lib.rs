@@ -146,7 +146,6 @@ fn get_save_file_data(file_bytes: &Vec<u8>) -> Result<HashMap<String, Property>,
   let mut properties = HashMap::new();
   loop {
     if char::from_u32(peek(&mut cursor)?).is_none() {
-      console_log!("EOF");
       break;
     }
     let name = cursor.read_string()?;
@@ -158,12 +157,6 @@ fn get_save_file_data(file_bytes: &Vec<u8>) -> Result<HashMap<String, Property>,
     let property = Property::new(data_type.as_str(), &mut cursor)?;
     properties.insert(name, property);
   }
-
-  console_log!(
-    "CURSOR: {}, FILE_SIZE: {}",
-    cursor.position(),
-    file_bytes.len()
-  );
 
   Ok(properties)
 }
