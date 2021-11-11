@@ -1,3 +1,4 @@
+use super::map_property::MapPropertyKey;
 use crate::properties::{GuidProperty, MapProperty, Property, StringProperty};
 use crate::utils::{error::ParseError, peek::peek, read_string::*};
 use byteorder::{LittleEndian, ReadBytesExt};
@@ -69,7 +70,7 @@ impl StructProperty {
     } else {
       let mut boxed_properties = HashMap::new();
       for (name, property) in properties {
-        boxed_properties.insert(name, Box::new(property));
+        boxed_properties.insert(MapPropertyKey::String(name), Box::new(property));
       }
       Ok(Property::from(MapProperty(boxed_properties)))
     }

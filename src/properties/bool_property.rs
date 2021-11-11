@@ -5,7 +5,7 @@ use serde::Serialize;
 use std::io::Cursor;
 
 #[derive(Debug, Serialize)]
-pub struct BoolProperty(bool);
+pub struct BoolProperty(pub bool);
 
 impl BoolProperty {
   pub fn new(reader: &mut Cursor<Vec<u8>>) -> Result<Property, ParseError> {

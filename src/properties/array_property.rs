@@ -1,3 +1,4 @@
+use super::IntProperty;
 use crate::properties::{GuidProperty, Property, StructProperty};
 use crate::utils::{error::ParseError, read_string::*};
 use byteorder::{LittleEndian, ReadBytesExt};
@@ -23,6 +24,15 @@ impl ArrayProperty {
     let num_properties = reader.read_i32::<LittleEndian>()?;
     let properties = match propert_type.as_str() {
       "StructProperty" => ArrayProperty::parse_struct_property_list(reader, num_properties)?,
+      "IntProperty" => {
+        let mut properties: Vec<Box<Property>> = Vec::new();
+        for _ in 0..num_properties {
+          properties.push(Box::new(Property::from(IntProperty(
+            reader.read_i32::<LittleEndian>()?,
+          ))))
+        }
+        properties
+      }
       "ObjectProperty" => {
         let mut properties: Vec<Box<Property>> = Vec::new();
         for _ in 0..num_properties {
