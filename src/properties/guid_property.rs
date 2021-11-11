@@ -1,4 +1,4 @@
-use crate::properties::Property;
+use super::Property;
 use crate::utils::{error::ParseError, guid::Guid, read_guid::ReadGuid};
 use serde::Serialize;
 use std::io::Cursor;

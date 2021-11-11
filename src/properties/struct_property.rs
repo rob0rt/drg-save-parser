@@ -1,11 +1,12 @@
-use super::map_property::MapPropertyKey;
-use crate::properties::{GuidProperty, MapProperty, Property, StringProperty};
-use crate::utils::{error::ParseError, peek::peek, read_string::*};
+use super::{map_property::MapPropertyKey, GuidProperty, MapProperty, Property, StringProperty};
+use crate::utils::{error::ParseError, peek::peek, read_string::ReadString};
 use byteorder::{LittleEndian, ReadBytesExt};
 use serde::{ser::SerializeMap, Serialize, Serializer};
-use std::char;
-use std::collections::HashMap;
-use std::io::{Cursor, Read};
+use std::{
+  char,
+  collections::HashMap,
+  io::{Cursor, Read},
+};
 
 #[derive(Debug)]
 pub struct StructProperty {

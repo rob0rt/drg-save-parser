@@ -1,5 +1,5 @@
-use crate::properties::Property;
-use crate::utils::{error::ParseError, read_string::*};
+use super::Property;
+use crate::utils::{error::ParseError, read_string::ReadString};
 use serde::Serialize;
 use std::io::{Cursor, Read};
 

@@ -1,4 +1,4 @@
-use crate::properties::Property;
+use super::Property;
 use crate::utils::error::ParseError;
 use byteorder::{LittleEndian, ReadBytesExt};
 use serde::Serialize;

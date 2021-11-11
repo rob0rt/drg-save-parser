@@ -1,11 +1,11 @@
-use crate::{
-  properties::{BoolProperty, FloatProperty, IntProperty, Property, StructProperty},
-  utils::{error::ParseError, read_guid::ReadGuid, read_string::ReadString},
-};
+use super::{BoolProperty, FloatProperty, IntProperty, Property, StructProperty};
+use crate::utils::{error::ParseError, read_guid::ReadGuid, read_string::ReadString};
 use byteorder::{LittleEndian, ReadBytesExt};
 use serde::{Serialize, Serializer};
-use std::collections::HashMap;
-use std::io::{Cursor, Read};
+use std::{
+  collections::HashMap,
+  io::{Cursor, Read},
+};
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub enum MapPropertyKey {

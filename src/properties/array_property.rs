@@ -1,6 +1,5 @@
-use super::IntProperty;
-use crate::properties::{GuidProperty, Property, StructProperty};
-use crate::utils::{error::ParseError, read_string::*};
+use super::{GuidProperty, IntProperty, Property, StructProperty};
+use crate::utils::{error::ParseError, read_string::ReadString};
 use byteorder::{LittleEndian, ReadBytesExt};
 use serde::Serialize;
 use std::io::{Cursor, Read};
