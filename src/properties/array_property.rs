@@ -5,7 +5,7 @@ use serde::Serialize;
 use std::io::{Cursor, Read};
 
 #[derive(Debug, Serialize)]
-pub struct ArrayProperty(pub Vec<Box<Property>>);
+pub struct ArrayProperty(pub Vec<Property>);
 
 impl ArrayProperty {
   pub fn new(reader: &mut Cursor<Vec<u8>>) -> Result<Property, ParseError> {
@@ -19,23 +19,23 @@ impl ArrayProperty {
   fn parse_property_list(
     reader: &mut Cursor<Vec<u8>>,
     propert_type: String,
-  ) -> Result<Vec<Box<Property>>, ParseError> {
+  ) -> Result<Vec<Property>, ParseError> {
     let num_properties = reader.read_i32::<LittleEndian>()?;
     let properties = match propert_type.as_str() {
       "StructProperty" => ArrayProperty::parse_struct_property_list(reader, num_properties)?,
       "IntProperty" => {
-        let mut properties: Vec<Box<Property>> = Vec::new();
+        let mut properties: Vec<Property> = Vec::new();
         for _ in 0..num_properties {
-          properties.push(Box::new(Property::from(IntProperty(
+          properties.push(Property::from(IntProperty(
             reader.read_i32::<LittleEndian>()?,
-          ))))
+          )))
         }
         properties
       }
       "ObjectProperty" => {
-        let mut properties: Vec<Box<Property>> = Vec::new();
+        let mut properties: Vec<Property> = Vec::new();
         for _ in 0..num_properties {
-          properties.push(Box::new(Property::new("ObjectProperty", reader)?))
+          properties.push(Property::new("ObjectProperty", reader)?)
         }
         properties
       }
@@ -52,12 +52,12 @@ impl ArrayProperty {
   fn parse_struct_property_list(
     reader: &mut Cursor<Vec<u8>>,
     num_properties: i32,
-  ) -> Result<Vec<Box<Property>>, ParseError> {
+  ) -> Result<Vec<Property>, ParseError> {
     let _name = reader.read_string()?;
     let property_type = reader.read_string()?;
     let _length = reader.read_i64::<LittleEndian>()?;
 
-    let mut properties: Vec<Box<Property>> = Vec::new();
+    let mut properties: Vec<Property> = Vec::new();
     match property_type.as_str() {
       "StructProperty" => {
         let struct_inner_property_type = reader.read_string()?;
@@ -68,7 +68,7 @@ impl ArrayProperty {
             "Guid" => GuidProperty::new(reader)?,
             _ => StructProperty::parse_property_array(reader)?,
           };
-          properties.push(Box::new(property));
+          properties.push(property);
         }
       }
       _ => {

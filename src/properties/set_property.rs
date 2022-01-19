@@ -5,7 +5,7 @@ use serde::Serialize;
 use std::io::{Cursor, Read};
 
 #[derive(Debug, Serialize)]
-pub struct SetProperty(pub Vec<Box<Property>>);
+pub struct SetProperty(pub Vec<Property>);
 
 impl SetProperty {
   pub fn new(reader: &mut Cursor<Vec<u8>>) -> Result<Property, ParseError> {
@@ -17,7 +17,7 @@ impl SetProperty {
     let mut items = Vec::new();
     for _ in 0..num_properties {
       match property_type.as_str() {
-        "StructProperty" => items.push(Box::new(GuidProperty::new(reader)?)),
+        "StructProperty" => items.push(GuidProperty::new(reader)?),
         _ => {
           return Err(ParseError::new(format!(
             "Unhandled Set property type {}",

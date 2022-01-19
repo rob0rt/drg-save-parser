@@ -1,3 +1,4 @@
+#[allow(clippy::new_ret_no_self)]
 mod properties;
 mod utils;
 
@@ -135,11 +136,10 @@ fn validate_save_file_header(reader: &mut Cursor<Vec<u8>>) -> Result<(), ParseEr
   Ok(())
 }
 
-fn get_save_file_data(file_bytes: &Vec<u8>) -> Result<HashMap<String, Property>, ParseError> {
+fn get_save_file_data(file_bytes: &[u8]) -> Result<HashMap<String, Property>, ParseError> {
   let mut cursor = Cursor::new(file_bytes.to_vec());
-  match validate_save_file_header(&mut cursor) {
-    Err(_) => return Err(ParseError::new("Invalid save file".to_string())),
-    _ => (),
+  if validate_save_file_header(&mut cursor).is_err() {
+    return Err(ParseError::new("Invalid save file".to_string()));
   };
   let _metadata = SaveFileMetadata::new(&mut cursor)?;
 
@@ -176,7 +176,7 @@ pub fn parse_save_file(file: File) -> ParseSaveFileResult {
       }));
       reader.set_onloadend(JsCast::dyn_ref(onloadend_cb.as_ref()));
       reader
-        .read_as_array_buffer(&file.get())
+        .read_as_array_buffer(file.get())
         .expect("blob not readable");
       onloadend_cb.forget();
     })

@@ -53,11 +53,7 @@ impl MapProperty {
         "StructProperty" => StructProperty::parse_property_array(reader)?,
         "IntProperty" => Property::from(IntProperty(reader.read_i32::<LittleEndian>()?)),
         "FloatProperty" => Property::from(FloatProperty(reader.read_f32::<LittleEndian>()?)),
-        "BoolProperty" => Property::from(BoolProperty(if reader.read_i8()? == 0 {
-          false
-        } else {
-          true
-        })),
+        "BoolProperty" => Property::from(BoolProperty(reader.read_i8()? != 0)),
         _ => {
           return Err(ParseError::new(format!(
             "Unhandled map value type {}",
