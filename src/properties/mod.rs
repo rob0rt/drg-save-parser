@@ -5,6 +5,7 @@ mod float_property;
 mod guid_property;
 mod int_property;
 mod map_property;
+mod multicast_inline_delegate_property;
 mod object_property;
 mod set_property;
 mod string_property;
@@ -22,6 +23,7 @@ use float_property::FloatProperty;
 use guid_property::GuidProperty;
 use int_property::IntProperty;
 use map_property::MapProperty;
+use multicast_inline_delegate_property::MulticastInlineDelegateProperty;
 use object_property::ObjectProperty;
 use set_property::SetProperty;
 use string_property::StringProperty;
@@ -45,6 +47,7 @@ pub enum Property {
   EnumProperty,
   MapProperty,
   ObjectProperty,
+  MulticastInlineDelegateProperty,
 }
 
 impl Property {
@@ -60,6 +63,7 @@ impl Property {
       "EnumProperty" => EnumProperty::new(reader),
       "MapProperty" => MapProperty::new(reader),
       "ObjectProperty" => ObjectProperty::new(reader),
+      "MulticastInlineDelegateProperty" => MulticastInlineDelegateProperty::new(reader),
       _ => {
         return Err(ParseError::new(format!(
           "Unhandled property data type {}",
