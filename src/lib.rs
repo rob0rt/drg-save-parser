@@ -45,7 +45,13 @@ export type SaveFile = {
       "CharacterVanitySave": {
         "UnLockedVanityItemIDs": string[],
       }
-    }
+    },
+    "VictoryPose": {
+      "VictoryPoseSave": {
+        "UnlockedVictoryPoses": string[],
+      }
+    },
+    "SavegameID": string,
   }[],
 }; 
 "#;
