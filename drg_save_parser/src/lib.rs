@@ -198,3 +198,16 @@ pub fn parse_save_file(file: File) -> ParseSaveFileResult {
 
   JsValue::from(promise).unchecked_into::<ParseSaveFileResult>()
 }
+
+#[cfg(test)]
+mod tests {
+  use std::{path::Path, fs};
+
+  const FILE: &'static str = concat!(env!("CARGO_MANIFEST_DIR"), "/", "broken_drg_completionist.sav");
+
+  #[test]
+  fn it_works() {
+    let sav = fs::read(Path::new(FILE)).expect("Failed to read save file");
+    println!("{:?}", crate::get_save_file_data(&sav));
+  }
+}
