@@ -1,2 +1,2 @@
 [workspace]
-members = ["unreal_save_parser", "drg_save_parser"]
+members = ["gvas_save_parser", "drg_save_parser"]

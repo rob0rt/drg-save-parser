@@ -1,6 +1,0 @@
-{
-    "rust-analyzer.linkedProjects": [
-        "./unreal_save_parser/Cargo.toml"
-    ],
-    "rust-analyzer.showUnlinkedFileNotification": false
-}

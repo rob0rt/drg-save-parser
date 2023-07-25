@@ -1,0 +1,11 @@
+[package]
+authors = ["Robert Lynch <robertlynch2012@gmail.com>"]
+edition = "2021"
+name = "gvas_save_parser"
+version = "1.0.0"
+license = "GPL-3.0"
+repository = "https://github.com/BobertForever/drg-save-parser"
+
+[dependencies]
+nom = { version = "7", features = ["alloc"] }
+serde = { version = "1", features = ["derive"] }
