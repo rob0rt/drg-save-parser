@@ -12,7 +12,7 @@ use set::parse_set_property;
 use super::primitives::{parse_bool, parse_string, Guid};
 use nom::{
   bytes::complete::take,
-  combinator::{cut, flat_map, map, map_res, verify},
+  combinator::{cut, fail, map, verify},
   error::{context, ContextError, FromExternalError, ParseError},
   multi::many_till,
   number::complete::{le_f32 as f32, le_i32 as i32, le_u32 as u32},
@@ -102,6 +102,7 @@ pub enum Property {
     name: String,
     value: String,
   },
+  Name(String),
 }
 
 pub fn parse_property_map<
@@ -118,40 +119,45 @@ pub fn parse_property_map<
     "property map",
     map(
       many_till(
-        context(
-          "property",
-          flat_map(
-            map_res(
-              tuple((parse_string, parse_string, take(8usize))),
-              |(property_name, property_type, _)| {
-                Ok((
-                  property_name,
-                  match property_type.as_str() {
-                    "IntProperty" => parse_int_property,
-                    "UInt32Property" => parse_uint32_property,
-                    "BoolProperty" => parse_bool_property,
-                    "StructProperty" => parse_struct_property,
-                    "ArrayProperty" => parse_array_property,
-                    "FloatProperty" => parse_float_property,
-                    "StrProperty" => parse_str_property,
-                    "MulticastInlineDelegateProperty" => parse_multicast_inline_delegate_property,
-                    "MapProperty" => parse_map_property,
-                    "SetProperty" => parse_set_property,
-                    "ObjectProperty" => parse_object_property,
-                    "EnumProperty" => parse_enum_property,
-                    p => return Err(format!("unrecognized property type `{p}`")),
-                  },
-                ))
-              },
-            ),
-            move |(name, parser)| map(parser, move |p| (name.to_owned(), p)),
-          ),
-        ),
+        context("property", |input| {
+          let (input, (property_name, property_type, _)) =
+            tuple((parse_string, parse_string, take(8usize)))(input)?;
+          let (input, property_value) = parse_property_value(property_type)(input)?;
+          Ok((input, (property_name, property_value)))
+        }),
         verify(cut(parse_string), |s: &str| s == "None"),
       ),
       |(v, _)| v.into_iter().collect(),
     ),
   )(input)
+}
+
+fn parse_property_value<
+  'a,
+  E: ParseError<&'a [u8]>
+    + ContextError<&'a [u8]>
+    + FromExternalError<&'a [u8], FromUtf16Error>
+    + FromExternalError<&'a [u8], FromUtf8Error>
+    + FromExternalError<&'a [u8], String>,
+>(
+  property_type: String,
+) -> impl FnMut(&'a [u8]) -> IResult<&'a [u8], Property, E> {
+  move |input| match property_type.as_str() {
+    "IntProperty" => parse_int_property,
+    "UInt32Property" => parse_uint32_property,
+    "BoolProperty" => parse_bool_property,
+    "StructProperty" => parse_struct_property,
+    "ArrayProperty" => parse_array_property,
+    "FloatProperty" => parse_float_property,
+    "StrProperty" => parse_str_property,
+    "MulticastInlineDelegateProperty" => parse_multicast_inline_delegate_property,
+    "MapProperty" => parse_map_property,
+    "SetProperty" => parse_set_property,
+    "ObjectProperty" => parse_object_property,
+    "EnumProperty" => parse_enum_property,
+    "NameProperty" => parse_name_property,
+    _ => fail,
+  }(input)
 }
 
 fn parse_object_property<
@@ -262,4 +268,19 @@ fn parse_enum_property<
 
     Ok((input, Property::Enum { name, value }))
   })(input)
+}
+
+fn parse_name_property<
+  'a,
+  E: ParseError<&'a [u8]>
+    + ContextError<&'a [u8]>
+    + FromExternalError<&'a [u8], FromUtf16Error>
+    + FromExternalError<&'a [u8], FromUtf8Error>,
+>(
+  input: &'a [u8],
+) -> IResult<&[u8], Property, E> {
+  context(
+    "name property",
+    map(preceded(take(1usize), parse_string), Property::Name),
+  )(input)
 }

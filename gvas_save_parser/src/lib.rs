@@ -15,44 +15,23 @@ mod tests {
   use std::{fs, path::Path};
 
   #[test]
-  fn it_successfully_parses_save_1() {
-    let sav = fs::read(Path::new(concat!(
+  fn it_successfully_parses_saves() {
+    let save_files = fs::read_dir(Path::new(concat!(
       env!("CARGO_MANIFEST_DIR"),
       "/",
       "test",
       "/",
-      "save_1.sav"
     )))
-    .expect("Failed to read save file");
+    .unwrap();
 
-    assert!(matches!(crate::parse_save_data(&sav), Ok(_)));
-  }
+    for save_file in save_files {
+      let save_file = save_file.unwrap();
+      let save_file_path = save_file.path();
+      let save_file_name = save_file_path.file_name().unwrap().to_str().unwrap();
+      let save_file_data = fs::read(&save_file_path).expect("Failed to read save file");
 
-  #[test]
-  fn it_successfully_parses_save_2() {
-    let sav = fs::read(Path::new(concat!(
-      env!("CARGO_MANIFEST_DIR"),
-      "/",
-      "test",
-      "/",
-      "save_2.sav"
-    )))
-    .expect("Failed to read save file");
-
-    assert!(matches!(crate::parse_save_data(&sav), Ok(_)));
-  }
-
-  #[test]
-  fn it_successfully_parses_save_3() {
-    let sav = fs::read(Path::new(concat!(
-      env!("CARGO_MANIFEST_DIR"),
-      "/",
-      "test",
-      "/",
-      "save_3.sav"
-    )))
-    .expect("Failed to read save file");
-
-    assert!(matches!(crate::parse_save_data(&sav), Ok(_)));
+      println!("Parsing save file {}", save_file_name);
+      assert!(matches!(crate::parse_save_data(&save_file_data), Ok(_)));
+    }
   }
 }
