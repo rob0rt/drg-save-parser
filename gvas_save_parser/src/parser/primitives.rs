@@ -84,7 +84,7 @@ pub fn parse_guid<'a, E: ParseError<&'a [u8]> + ContextError<&'a [u8]>>(
   context(
     "guid",
     map(count(u32, 4), |v| {
-      if v.clone().into_iter().all(|i| i == 0) {
+      if v.as_slice().into_iter().all(|i| *i == 0) {
         Guid(None)
       } else {
         Guid(Some(
