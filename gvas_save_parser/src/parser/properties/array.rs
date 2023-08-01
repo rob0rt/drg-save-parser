@@ -100,10 +100,7 @@ fn parse_object_array<
     context(
       "object array",
       count(
-        map(
-           parse_string,
-          ArrayPropertyValue::Object,
-        ),
+        map(parse_string, ArrayPropertyValue::Object),
         property_count.to_usize(),
       ),
     )(input)
