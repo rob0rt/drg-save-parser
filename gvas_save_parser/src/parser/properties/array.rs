@@ -8,7 +8,6 @@ use nom::{
   number::complete::le_i32 as i32,
   number::complete::le_u32 as u32,
   number::complete::le_u64 as u64,
-  sequence::preceded,
   Err, IResult, ToUsize,
 };
 use std::string::{FromUtf16Error, FromUtf8Error};
@@ -102,7 +101,7 @@ fn parse_object_array<
       "object array",
       count(
         map(
-          preceded(take(1usize), parse_string),
+           parse_string,
           ArrayPropertyValue::Object,
         ),
         property_count.to_usize(),
