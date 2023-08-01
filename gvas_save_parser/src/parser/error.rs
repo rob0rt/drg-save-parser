@@ -5,6 +5,7 @@ use nom::error::{ContextError, ErrorKind, FromExternalError, ParseError};
 #[derive(Debug)]
 enum ParseErrorKind {
   Parser(ErrorKind),
+  #[allow(dead_code)]
   External { parser: ErrorKind, message: String },
 }
 
@@ -56,7 +57,7 @@ impl<'a> Display for SaveFileParseError<'a> {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     write!(
       f,
-      "context {}\n{:?}\n{}",
+      "Context\n\t{}\nError Stack\n\t{:?}\nNext 16 Bytes\n\t{}\n",
       self
         .context
         .clone()

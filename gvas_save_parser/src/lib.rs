@@ -31,7 +31,10 @@ mod tests {
       let save_file_data = fs::read(&save_file_path).expect("Failed to read save file");
 
       println!("Parsing save file {}", save_file_name);
-      assert!(matches!(crate::parse_save_data(&save_file_data), Ok(_)));
+      match crate::parse_save_data(&save_file_data) {
+        Ok(_) => (),
+        Err(e) => panic!("Failed to parse save file {};\n{}", save_file_name, e),
+      }
     }
   }
 }
