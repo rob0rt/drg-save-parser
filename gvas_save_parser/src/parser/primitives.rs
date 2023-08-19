@@ -19,9 +19,11 @@ const VALID_STRING_LENGTH: Range<i32> = -(1 << 16)..(1 << 16);
 
 /**
  * Strings of length > 0 are laid out in the structure:
- *   [u32 | length][(u8 * (length - 1)) | data][u8 | \0]
+ *   [i32 | length][(u8 * (length - 1)) | data][u8 | \0]
+ * Strings of length < 0 are laid out in the structure:
+ *   [i32 | length][(u16 * (-length) - u8) | data][u8 | \0]
  * And empty strings are in the format:
- *   [u32 | 0]
+ *   [i32 | 0]
  *
  * Note the lack of null-terminator for strings of length 0, which appears to
  * be an optimization for file size.
@@ -64,7 +66,7 @@ pub fn parse_string<
 }
 
 #[derive(PartialEq, Hash, Eq, Debug, Serialize)]
-pub struct Guid(Option<String>);
+pub struct Guid(String);
 
 /**
  * GUIDs are 4 4-byte groups of hex values encoded in the save file as ints,
@@ -76,7 +78,7 @@ pub struct Guid(Option<String>);
  *   4C4F1A50-42CB24CC-2A7F28B0-0D12AEF9
  *
  * Note that it's possible for a GUID value to be all 0s, which is a form of
- * "null" state, so we specifically look for that and map into "None".
+ * "null" state.
  */
 pub fn parse_guid<'a, E: ParseError<&'a [u8]> + ContextError<&'a [u8]>>(
   input: &'a [u8],
@@ -84,16 +86,12 @@ pub fn parse_guid<'a, E: ParseError<&'a [u8]> + ContextError<&'a [u8]>>(
   context(
     "guid",
     map(count(u32, 4), |v| {
-      if v.as_slice().into_iter().all(|i| *i == 0) {
-        Guid(None)
-      } else {
-        Guid(Some(
-          v.into_iter()
-            .map(|i| format!("{i:08X}"))
-            .collect::<Vec<_>>()
-            .join("-"),
-        ))
-      }
+      Guid(
+        v.into_iter()
+          .map(|i| format!("{i:08X}"))
+          .collect::<Vec<_>>()
+          .join("-"),
+      )
     }),
   )(input)
 }
