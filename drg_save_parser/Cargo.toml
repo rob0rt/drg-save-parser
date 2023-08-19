@@ -2,7 +2,7 @@
 authors = ["Robert Lynch <robertlynch2012@gmail.com>"]
 edition = "2021"
 name = "drg-save-parser"
-version = "4.0.2"
+version = "4.0.3"
 license = "GPL-3.0"
 repository = "https://github.com/BobertForever/drg-save-parser"
 
