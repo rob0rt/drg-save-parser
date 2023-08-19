@@ -13,7 +13,7 @@ use std::{
 
 /**
  * The maximum acceptable size of a string is 2^16. String lengths are negative
- * if the stirn is encoded as a wide string.
+ * if the string is encoded as a wide string.
  */
 const VALID_STRING_LENGTH: Range<i32> = -(1 << 16)..(1 << 16);
 
