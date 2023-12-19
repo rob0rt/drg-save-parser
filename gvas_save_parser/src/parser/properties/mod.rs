@@ -14,7 +14,7 @@ use nom::{
   bytes::complete::take,
   combinator::{cut, fail, map, verify},
   error::{context, ContextError, FromExternalError, ParseError},
-  multi::many_till,
+  multi::{length_count, many_till},
   number::complete::{le_f32 as f32, le_i32 as i32, le_u32 as u32},
   sequence::{preceded, tuple},
   IResult,
@@ -82,6 +82,12 @@ impl Serialize for StructPropertyValue {
 }
 
 #[derive(Debug, Serialize)]
+pub struct Delegate {
+  object_path: String,
+  function_name: String,
+}
+
+#[derive(Debug, Serialize)]
 #[serde(untagged)]
 pub enum Property {
   Int(i32),
@@ -90,18 +96,12 @@ pub enum Property {
   Struct(StructPropertyValue),
   Array(Vec<ArrayPropertyValue>),
   Float(f32),
-  MulticastInlineDelegate {
-    object_path: String,
-    function_name: String,
-  },
+  MulticastInlineDelegate(Vec<Delegate>),
   Str(String),
   Map(HashMap<MapPropertyKey, MapPropertyValue>),
   Set(HashSet<SetPropertyValue>),
   Object(String),
-  Enum {
-    name: String,
-    value: String,
-  },
+  Enum { name: String, value: String },
   Name(String),
 }
 
@@ -184,21 +184,25 @@ fn parse_multicast_inline_delegate_property<
 >(
   input: &'a [u8],
 ) -> IResult<&[u8], Property, E> {
-  context("multicast inline delegate property", |input| {
-    // There's 5 bytes of something at the top of this property. From what I've
-    // gathered, it may be a bitmask of flags, or other alignment options.
-    // Regardless, it doesn't seem to be important to us, so we'll disregard
-    // that entire region of the save file
-    let (input, _) = take(5u8)(input)?;
-
-    map(
-      tuple((parse_string, parse_string)),
-      |(object_path, function_name)| Property::MulticastInlineDelegate {
-        object_path,
-        function_name,
-      },
-    )(input)
-  })(input)
+  context(
+    "multicast inline delegate property",
+    preceded(
+      take(1u8),
+      map(
+        length_count(
+          u32,
+          map(
+            tuple((parse_string, parse_string)),
+            |(object_path, function_name)| Delegate {
+              object_path,
+              function_name,
+            },
+          ),
+        ),
+        |delegates| Property::MulticastInlineDelegate(delegates),
+      ),
+    ),
+  )(input)
 }
 
 fn parse_int_property<'a, E: ParseError<&'a [u8]> + ContextError<&'a [u8]>>(
